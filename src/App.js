@@ -1,16 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import Header from './components/Header'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import NewTicket from './pages/NewTicket'
+import Ticket from './pages/Ticket'
+import Tickets from './pages/Tickets'
 import PrivateRoute from './components/PrivateRoute'
 
 function App() {
-
-  const notify = () => toast('Wow, so Easy!!!')
 
   return (
     <>
@@ -34,7 +34,7 @@ function App() {
               path='/tickets'
               element={
                 <PrivateRoute>
-                  <NewTicket />
+                  <Tickets />
                 </PrivateRoute>
               }
             />
@@ -42,7 +42,7 @@ function App() {
               path='/ticket/:ticketId'
               element={
                 <PrivateRoute>
-                  <NewTicket />
+                  <Ticket />
                 </PrivateRoute>
               }
             />
