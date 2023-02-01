@@ -1,18 +1,21 @@
 import { useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import { FaSignInAlt } from 'react-icons/fa'
 import { login } from '../features/auth/authSlice'
+import Spinner from '../components/Spinner'
 
 const Login = () => {
-
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   })
-
-  const {email, password} = formData
+  const { email, password } = formData
   const dispatch = useDispatch()
-  const {user, isError, isLoading, isSuccess, message} = useSelector(state => state.auth)
+  const navigate = useNavigate()
+  const { isLoading } = useSelector((state) => state.auth)
+
 
   const onChange = (e) => {
     setFormData((prevState) => ({
@@ -21,27 +24,38 @@ const Login = () => {
     }))
   }
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault()
     const userData = {
       email,
       password,
     }
     dispatch(login(userData))
+      .unwrap()
+      .then((user) => {
+        toast.success(`Logged in as ${user.name}`)
+        navigate('/')
+      })
+      .catch(toast.error)
+  }
+
+
+  if (isLoading) {
+    return <Spinner />
   }
 
   return (
     <>
-      <section className="heading">
+      <section className='heading'>
         <h1>
           <FaSignInAlt /> Login
         </h1>
         <p>Please log in to get access</p>
       </section>
-      <section className="form">
+      <section className='form'>
         <form onSubmit={onSubmit}>
-          <div className="form-group">
-            <input 
+          <div className='form-group'>
+            <input
               type='email'
               className='form-control'
               id='email'
@@ -52,8 +66,8 @@ const Login = () => {
               value={email}
             />
           </div>
-          <div className="form-group">
-            <input 
+          <div className='form-group'>
+            <input
               type='password'
               className='form-control'
               id='password'
@@ -64,8 +78,8 @@ const Login = () => {
               value={password}
             />
           </div>
-          <div className="form-group">
-            <button className="btn btn-block">Submit</button>
+          <div className='form-group'>
+            <button className='btn btn-block'>Submit</button>
           </div>
         </form>
       </section>

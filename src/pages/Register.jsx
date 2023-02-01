@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { toast } from 'react-toastify'
 import { FaUser } from 'react-icons/fa'
-import { register, reset } from '../features/auth/authSlice'
+import { register } from '../features/auth/authSlice'
+import Spinner from '../components/Spinner'
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -13,31 +14,21 @@ const Register = () => {
     password2: '',
   })
 
-  const {name, email, password, password2} = formData
+  const { name, email, password, password2 } = formData
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const {user, isError, isLoading, isSuccess, message} = useSelector(state => state.auth)
+  const { isLoading } = useSelector((state) => state.auth)
 
-  useEffect(() => {
-    if(isError){
-      toast.error(message)
-    }
-    if(isSuccess || user){
-      navigate('/')
-    }
-    dispatch(reset)
-  }, [isError, isSuccess, user, message, navigate, dispatch])
-
-  const onChange = e => {
+  const onChange = (e) => {
     setFormData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }))
   }
 
-  const onSubmit = e => {
+  const onSubmit = (e) => {
     e.preventDefault()
-    if(password !== password2) {
+    if (password !== password2) {
       toast.error('Passwords do not match')
     } else {
       const userData = {
@@ -46,7 +37,17 @@ const Register = () => {
         password,
       }
       dispatch(register(userData))
+        .unwrap()
+        .then((user) => {
+          toast.success(`Registered new user - ${user.name}`)
+          navigate('/')
+        })
+        .catch(toast.error)
     }
+  }
+
+  if (isLoading) {
+    return <Spinner />
   }
 
   return (
@@ -57,9 +58,9 @@ const Register = () => {
         </h1>
         <p>Please create an account</p>
       </section>
-      <section className="form">
+      <section className='form'>
         <form onSubmit={onSubmit}>
-          <div className="form-group">
+          <div className='form-group'>
             <input
               type='text'
               className='form-control'
@@ -71,7 +72,7 @@ const Register = () => {
               onChange={onChange}
             />
           </div>
-          <div className="form-group">
+          <div className='form-group'>
             <input
               type='email'
               className='form-control'
@@ -83,7 +84,7 @@ const Register = () => {
               onChange={onChange}
             />
           </div>
-          <div className="form-group">
+          <div className='form-group'>
             <input
               type='password'
               className='form-control'
@@ -95,7 +96,7 @@ const Register = () => {
               onChange={onChange}
             />
           </div>
-          <div className="form-group">
+          <div className='form-group'>
             <input
               type='password'
               className='form-control'
@@ -107,8 +108,8 @@ const Register = () => {
               onChange={onChange}
             />
           </div>
-          <div className="form-group">
-            <button className="btn btn-block">Submit</button>
+          <div className='form-group'>
+            <button className='btn btn-block'>Submit</button>
           </div>
         </form>
       </section>
