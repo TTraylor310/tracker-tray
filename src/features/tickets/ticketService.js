@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const API_URL = 'https://tickettracker-api.onrender.com/api/tickets/'
-const API_URL = 'http://localhost:5005/api/tickets/'
+const API_URL = 'https://tickettracker-api.onrender.com/api/tickets/'
+// const API_URL = 'http://localhost:5005/api/tickets/'
 
 const createTicket = async(ticketData, token) => {
   const config = {
