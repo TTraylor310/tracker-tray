@@ -1,14 +1,15 @@
 import { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import {useParams, useNavigate} from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import Modal from 'react-modal'
-import {toast} from 'react-toastify'
+import { toast } from 'react-toastify'
 import { FaPlus } from 'react-icons/fa'
 import { closeTicket, getTicket } from '../features/tickets/ticketSlice'
-import { createNote } from '../features/notes/noteSlice'
+import { createNote, getNotes } from '../features/notes/noteSlice'
 
 import BackButton from '../components/BackButton'
 import Spinner from '../components/Spinner'
+import NoteItem from '../components/NoteItem'
 
 
 Modal.setAppElement('#root')
@@ -29,18 +30,18 @@ const customStyles = {
 const Ticket = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
+  const { ticket } = useSelector((state) => state.tickets)
+  const { notes } = useSelector((state) => state.notes)
+  const { ticketId } = useParams()
+  const [noteText, setNoteText] = useState('')
   const [modalIsOpen, setModalIsOpen] = useState(false)
   const openModal = () => setModalIsOpen(true)
   const closeModal = () => setModalIsOpen(false)
 
-  const {ticket} = useSelector((state) => state.tickets)
-  const {ticketId} = useParams()
-  const [noteText, setNoteText] = useState('')
 
   useEffect(() => {
     dispatch(getTicket(ticketId)).unwrap().catch(toast.error)
-
+    dispatch(getNotes(ticketId)).unwrap().catch(toast.error)
   }, [dispatch, ticketId])
 
 
@@ -54,9 +55,10 @@ const Ticket = () => {
       .catch(toast.error)
   }
 
-  const onNoteSubmit = e => {
+
+  const onNoteSubmit = (e) => {
     e.preventDefault()
-    dispatch(createNote({noteText, ticketId}))
+    dispatch(createNote({ noteText, ticketId }))
       .unwrap()
       .then(() => {
         setNoteText('')
@@ -66,13 +68,13 @@ const Ticket = () => {
   }
 
 
-  if(!ticket) {
+  if (!ticket) {
     return <Spinner />
   }
 
   return (
-    <div className="ticket-page">
-      <header className="ticket-header">
+    <div className='ticket-page'>
+      <header className='ticket-header'>
         <BackButton />
         <h2>
           Ticket ID: {ticket._id}
@@ -127,15 +129,20 @@ const Ticket = () => {
         </form>
       </Modal>
 
+      {notes ? (
+        notes.map((note) => <NoteItem key={note._id} note={note} />)
+      ) : (
+        <Spinner />
+      )}
 
       {ticket.status !== 'closed' && (
-        <button onClick={onTicketClose} className="btn btn-block btn-danger">
+        <button onClick={onTicketClose} className='btn btn-block btn-danger'>
           Close Ticket
         </button>
       )}
-
     </div>
   )
 }
+
 
 export default Ticket
